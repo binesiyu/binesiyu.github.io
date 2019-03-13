@@ -95,7 +95,7 @@
 
 
   <meta name="description" content="源起在使用cocos2dx游戏引擎的renderTexter来产生一个贴图,以便于做一个后期处理,实验当中发现如果有使用layercolor节点,并调整过alpha值那么拿到的RT的alpha就会有问题,layercolor的区域会产生透明效果,就算后面再加一个不透明的贴图产生的结果alpha也是不对,经过排查是layercoler使用的非预乘混合模式引起的.详情请听下文分析 alphablend">
-<meta name="keywords" content="premultipliedalpha gles opengl alphablend">
+<meta name="keywords" content="premultiplied alpha,gles,opengl,alphablend">
 <meta property="og:type" content="article">
 <meta property="og:title" content="预乘Alpha">
 <meta property="og:url" content="http://yoursite.com/2019/03/09/预乘Alpha/index.html">
@@ -104,7 +104,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://wikimedia.org/api/rest_v1/media/math/render/svg/a92cffa85057fafdd90b31202ce44690958b8cb9">
 <meta property="og:image" content="https://wikimedia.org/api/rest_v1/media/math/render/svg/f81f0614ca085544b693191f90123f8671a88e0f">
-<meta property="og:updated_time" content="2019-03-09T03:17:41.682Z">
+<meta property="og:updated_time" content="2019-03-11T07:15:49.396Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="预乘Alpha">
 <meta name="twitter:description" content="源起在使用cocos2dx游戏引擎的renderTexter来产生一个贴图,以便于做一个后期处理,实验当中发现如果有使用layercolor节点,并调整过alpha值那么拿到的RT的alpha就会有问题,layercolor的区域会产生透明效果,就算后面再加一个不透明的贴图产生的结果alpha也是不对,经过排查是layercoler使用的非预乘混合模式引起的.详情请听下文分析 alphablend">
@@ -367,12 +367,24 @@
                 
               
 
-              <time title="Created: 2019-03-09 09:50:19 / Modified: 11:17:41" itemprop="dateCreated datePublished" datetime="2019-03-09T09:50:19+08:00">2019-03-09</time>
+              <time title="Created: 2019-03-09 09:50:19" itemprop="dateCreated datePublished" datetime="2019-03-09T09:50:19+08:00">2019-03-09</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-11 15:15:49" itemprop="dateModified" datetime="2019-03-11T15:15:49+08:00">2019-03-11</time>
               
             
           </span>
@@ -440,24 +452,25 @@
 <li>shader里在直接使用color * alpha,那么在混用阶段还是可以使用预乘的公式</li>
 <li>调整alpha的混用公式</li>
 </ol>
-<p>引擎是1和3的方案,但是在使用3方案时没有使用分开设置参数的接口,而是使用<code>glBlendFunc</code>接口统一设置参数,在正常情况下对RGB的计算是正确的,但是A通道的值计算就会产生问题,不再是上面的公式里的参数<br>示例: </p>
+<p>引擎是1和3的方案,但是在使用3方案时没有使用分开设置参数的接口,而是使用<code>glBlendFunc</code>接口统一设置参数,在正常情况下对RGB的计算是正确的,但是A通道的值计算就会产生问题,不再是上面的公式里的参数<br>示例:</p>
 <p>假设A纯灰色前景(1.0,1.0,1.0,0.5) ,B纯黑色背景(0,0,0,0) 正常情况下混合的结果是</p>
 <p><code>A * B = (0.5,0.5,0.5,0.5)</code></p>
 <p><code>alpha值 = (1.0 * 0.5) + (1- 0.5) * 0.0 = 0.5</code></p>
-<p>而现在变成 </p>
+<p>而现在变成</p>
 <p><code>A * B = (0.5,0.5,0,5,0.25)</code></p>
 <p><code>alpha值 = (0.5 * 0.5) + (1- 0.5) * 0.0 = 0.25</code></p>
-<p>产生的结果是不正确的,回到开始的问题,引擎中的layercoler就是非预乘的混合参数,然后使用3的方案来修正,但是结果alpha通道的值就是不正确的.<br>假设A为纯灰色前景(1.0,1.0,1.0,0.5) ,B为纯白色背景(1.0,1.0,1.0,1.0) 正常情况下混合的结果是</p>
-<p>$ A_a * B = (1.0,1.0,1.0,1.0) $</p>
+<p>产生的结果是不正确的,回到开始的问题,引擎中的layercoler就是非预乘的混合参数,然后使用3的方案来修正.<br>假设A为纯灰色前景(1.0,1.0,1.0,0.5) ,B为纯白色背景(1.0,1.0,1.0,1.0) 正常情况下混合的结果是</p>
+<p><code>A * B = (1.0,1.0,1.0,1.0)</code></p>
 <p><code>alpha值 = (1.0 * 0.5) + (1- 0.5) * 1.0 = 1.0</code></p>
-<p>而现在变成 </p>
+<p>而现在变成</p>
 <p><code>A * B = (1.0,1.0,1.0,,0.25)</code></p>
 <p><code>alpha值 = (0.5 * 0.5) + (1- 0.5) * 1.0 = 0.75</code></p>
-<p>从结果上来看色值是正确的,但通道值不是正常的1.0值,所以如果再拿RT的纹理混上其他背景就会产生不正确的结果</p>
+<p>从结果上来看色值是正确的,但通道值不是正常的1.0值,所以如果再拿RT的纹理混上其他背景就会产生不正确的结果,会产生透明的效果</p>
 <h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><ol>
 <li>使用方案2,修改所有使用到的shader,对于alphablend阶段都是使用预乘的公式</li>
 <li>使用<code>glBlendFuncSeperate</code>修改非预乘时的设置参数接口,分开设置RGB与A的计算参数,保证A通道的计算结果是正确的</li>
 </ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://zh.wikipedia.org/wiki/Alpha%E5%90%88%E6%88%90" target="_blank" rel="noopener">混合</a><br><a href="https://zh.wikipedia.org/wiki/Alpha%E5%90%88%E6%88%90" target="_blank" rel="noopener">Alpha合成</a></p>
 
       
     </div>
@@ -481,7 +494,13 @@
       
         <div class="post-tags">
           
-            <a href="/tags/premultipliedalpha-gles-opengl-alphablend/" rel="tag"># premultipliedalpha gles opengl alphablend</a>
+            <a href="/tags/premultiplied-alpha/" rel="tag"># premultiplied alpha</a>
+          
+            <a href="/tags/gles/" rel="tag"># gles</a>
+          
+            <a href="/tags/opengl/" rel="tag"># opengl</a>
+          
+            <a href="/tags/alphablend/" rel="tag"># alphablend</a>
           
         </div>
       
@@ -503,6 +522,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/10/git中文乱码/" rel="prev" title="git中文乱码">
+                git中文乱码 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -572,7 +595,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-count">8</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -591,7 +614,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">3</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -612,7 +641,23 @@
                     
                       
                     
-                    <span class="site-state-item-count">4</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -648,7 +693,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#源起"><span class="nav-number">1.</span> <span class="nav-text">源起</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#alphablend计算公式"><span class="nav-number">2.</span> <span class="nav-text">alphablend计算公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#碰上预乘-premultiplied-alpha"><span class="nav-number">3.</span> <span class="nav-text">碰上预乘(premultiplied alpha)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cocos对预乘的处理"><span class="nav-number">4.</span> <span class="nav-text">cocos对预乘的处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案"><span class="nav-number">5.</span> <span class="nav-text">解决方案</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#源起"><span class="nav-number">1.</span> <span class="nav-text">源起</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#alphablend计算公式"><span class="nav-number">2.</span> <span class="nav-text">alphablend计算公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#碰上预乘-premultiplied-alpha"><span class="nav-number">3.</span> <span class="nav-text">碰上预乘(premultiplied alpha)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cocos对预乘的处理"><span class="nav-number">4.</span> <span class="nav-text">cocos对预乘的处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案"><span class="nav-number">5.</span> <span class="nav-text">解决方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>

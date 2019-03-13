@@ -317,6 +317,592 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/13/lua类机制/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yu Bin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来视">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/13/lua类机制/" class="post-title-link" itemprop="url">lua类机制</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-13 09:01:53 / Modified: 09:08:30" itemprop="dateCreated datePublished" datetime="2019-03-13T09:01:53+08:00">2019-03-13</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/lua/" itemprop="url" rel="index"><span itemprop="name">lua</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="lua类机制的简易实现"><a href="#lua类机制的简易实现" class="headerlink" title="lua类机制的简易实现"></a>lua类机制的简易实现</h2><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> _class=&#123;&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">class</span><span class="params">(super)</span></span></span><br><span class="line">	<span class="keyword">local</span> class_type=&#123;&#125;</span><br><span class="line">	class_type.ctor=<span class="literal">false</span></span><br><span class="line">	class_type.super=super</span><br><span class="line">	class_type.new=<span class="function"><span class="keyword">function</span><span class="params">(...)</span></span> </span><br><span class="line">			<span class="keyword">local</span> obj=&#123;&#125;</span><br><span class="line">			<span class="keyword">do</span></span><br><span class="line">				<span class="keyword">local</span> <span class="built_in">create</span></span><br><span class="line">				<span class="built_in">create</span> = <span class="function"><span class="keyword">function</span><span class="params">(c,...)</span></span></span><br><span class="line">					<span class="keyword">if</span> c.super <span class="keyword">then</span></span><br><span class="line">						<span class="built_in">create</span>(c.super,...)</span><br><span class="line">					<span class="keyword">end</span></span><br><span class="line">					<span class="keyword">if</span> c.ctor <span class="keyword">then</span></span><br><span class="line">						c.ctor(obj,...)</span><br><span class="line">					<span class="keyword">end</span></span><br><span class="line">				<span class="keyword">end</span></span><br><span class="line"> </span><br><span class="line">				<span class="built_in">create</span>(class_type,...)</span><br><span class="line">			<span class="keyword">end</span></span><br><span class="line">			<span class="built_in">setmetatable</span>(obj,&#123; <span class="built_in">__index</span>=_class[class_type] &#125;)</span><br><span class="line">			<span class="keyword">return</span> obj</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">local</span> vtbl=&#123;&#125;</span><br><span class="line">	_class[class_type]=vtbl</span><br><span class="line"> </span><br><span class="line">	<span class="built_in">setmetatable</span>(class_type,&#123;<span class="built_in">__newindex</span>=</span><br><span class="line">		<span class="function"><span class="keyword">function</span><span class="params">(t,k,v)</span></span></span><br><span class="line">			vtbl[k]=v</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">	&#125;)</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">if</span> super <span class="keyword">then</span></span><br><span class="line">		<span class="built_in">setmetatable</span>(vtbl,&#123;<span class="built_in">__index</span>=</span><br><span class="line">			<span class="function"><span class="keyword">function</span><span class="params">(t,k)</span></span></span><br><span class="line">				<span class="keyword">local</span> ret=_class[super][k]</span><br><span class="line">				vtbl[k]=ret</span><br><span class="line">				<span class="keyword">return</span> ret</span><br><span class="line">			<span class="keyword">end</span></span><br><span class="line">		&#125;)</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"> </span><br><span class="line">	<span class="keyword">return</span> class_type</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">base_type=class()		<span class="comment">-- 定义一个基类 base_type</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">base_type:ctor</span><span class="params">(x)</span></span>	<span class="comment">-- 定义 base_type 的构造函数</span></span><br><span class="line">	<span class="built_in">print</span>(<span class="string">"base_type ctor"</span>)</span><br><span class="line">	self.x=x</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">base_type:print_x</span><span class="params">()</span></span>	<span class="comment">-- 定义一个成员函数 base_type:print_x</span></span><br><span class="line">	<span class="built_in">print</span>(self.x)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">base_type:hello</span><span class="params">()</span></span>	<span class="comment">-- 定义另一个成员函数 base_type:hello</span></span><br><span class="line">	<span class="built_in">print</span>(<span class="string">"hello base_type"</span>)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">test=class(base_type)	<span class="comment">-- 定义一个类 test 继承于 base_type</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test:ctor</span><span class="params">()</span></span>	<span class="comment">-- 定义 test 的构造函数</span></span><br><span class="line">	<span class="built_in">print</span>(<span class="string">"test ctor"</span>)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test:hello</span><span class="params">()</span></span>	<span class="comment">-- 重载 base_type:hello 为 test:hello</span></span><br><span class="line">	<span class="built_in">print</span>(<span class="string">"hello test"</span>)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">a=test.new(<span class="number">1</span>)	<span class="comment">-- 输出两行，base_type ctor 和 test ctor 。这个对象被正确的构造了。</span></span><br><span class="line">a:print_x()	<span class="comment">-- 输出 1 ，这个是基类 base_type 中的成员函数。</span></span><br><span class="line">a:hello()	<span class="comment">-- 输出 hello test ，这个函数被重载了。</span></span><br></pre></td></tr></table></figure>
+<h2 id="lua类机制的简易实现–多重继承"><a href="#lua类机制的简易实现–多重继承" class="headerlink" title="lua类机制的简易实现–多重继承"></a>lua类机制的简易实现–多重继承</h2><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">local</span> <span class="function"><span class="keyword">function</span> <span class="title">search</span><span class="params">(classes, key)</span></span></span><br><span class="line">    <span class="keyword">for</span> i = <span class="number">1</span>, #classes <span class="keyword">do</span></span><br><span class="line">        <span class="keyword">local</span> value = classes[i][key];</span><br><span class="line">        <span class="keyword">if</span> value ~= <span class="literal">nil</span> <span class="keyword">then</span></span><br><span class="line">            <span class="keyword">return</span> value;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> <span class="function"><span class="keyword">function</span> <span class="title">class</span><span class="params">(fun,...)</span></span></span><br><span class="line">    <span class="keyword">local</span> class_type=&#123;&#125;</span><br><span class="line">    class_type.ctor=<span class="literal">false</span></span><br><span class="line">    <span class="keyword">local</span> parents = &#123;...&#125;</span><br><span class="line">    <span class="keyword">if</span> #parents  &gt; <span class="number">0</span> <span class="keyword">then</span></span><br><span class="line">        class_type.super=parents</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        class_type.super=<span class="literal">nil</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    class_type.fun = fun</span><br><span class="line">    class_type.new=<span class="function"><span class="keyword">function</span><span class="params">(...)</span></span></span><br><span class="line">        <span class="keyword">local</span> obj</span><br><span class="line">        <span class="keyword">if</span> class_type.fun <span class="keyword">then</span></span><br><span class="line">            obj = class_type.fun(...)</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            obj = &#123;&#125;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">do</span></span><br><span class="line">            <span class="keyword">local</span> <span class="built_in">create</span></span><br><span class="line">            <span class="built_in">create</span> = <span class="function"><span class="keyword">function</span><span class="params">(c,...)</span></span></span><br><span class="line">                <span class="keyword">if</span> c.super <span class="keyword">then</span></span><br><span class="line">                    <span class="keyword">for</span> i = <span class="number">1</span>, #c.super <span class="keyword">do</span></span><br><span class="line">                        <span class="built_in">create</span>(c.super[i],...)</span><br><span class="line">                    <span class="keyword">end</span></span><br><span class="line">                <span class="keyword">end</span></span><br><span class="line">                <span class="keyword">if</span> c.ctor <span class="keyword">then</span></span><br><span class="line">                    c.ctor(obj,...)</span><br><span class="line">                <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">            <span class="built_in">create</span>(class_type,...)</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="built_in">setmetatable</span>(obj,&#123; <span class="built_in">__index</span>=class_type &#125;)</span><br><span class="line">        <span class="keyword">return</span> obj</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> class_type.super <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">setmetatable</span>(class_type,&#123;<span class="built_in">__index</span>=</span><br><span class="line">                <span class="function"><span class="keyword">function</span><span class="params">(t,k)</span></span></span><br><span class="line">                    <span class="keyword">local</span> ret=search(class_type.super,k)</span><br><span class="line">                    class_type[k]=ret</span><br><span class="line">                    <span class="keyword">return</span> ret</span><br><span class="line">                <span class="keyword">end</span></span><br><span class="line">            &#125;)</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> class_type</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> base_type=class()		<span class="comment">-- 定义一个基类 base_type</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">base_type:ctor</span><span class="params">(x)</span></span>	<span class="comment">-- 定义 base_type 的构造函数</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"base_type ctor"</span>)</span><br><span class="line">    self.x=x</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">base_type:print_x</span><span class="params">()</span></span>	<span class="comment">-- 定义一个成员函数 base_type:print_x</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"print base_type"</span>)</span><br><span class="line">    <span class="built_in">print</span>(self.x)</span><br><span class="line">    self:print_b()</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">base_type:hello</span><span class="params">()</span></span>	<span class="comment">-- 定义另一个成员函数 base_type:hello</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"hello base_type"</span>)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> base_typeB=class()		<span class="comment">-- 定义一个基类 base_type</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">base_typeB:ctor</span><span class="params">(x)</span></span>	<span class="comment">-- 定义 base_type 的构造函数</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"base_typeB ctor"</span>)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">base_typeB:print_b</span><span class="params">()</span></span>	<span class="comment">-- 定义一个成员函数 base_type:print_x</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"print base_typeB"</span>)</span><br><span class="line">    <span class="built_in">print</span>(self.x)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">base_typeB:helloB</span><span class="params">()</span></span>	<span class="comment">-- 定义另一个成员函数 base_type:hello</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"hello base_typeB"</span>)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> test=class(<span class="function"><span class="keyword">function</span><span class="params">()</span></span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"fun"</span>)</span><br><span class="line">    <span class="keyword">return</span> &#123;&#125;</span><br><span class="line"><span class="keyword">end</span>,</span><br><span class="line">base_typeB,base_type)	<span class="comment">-- 定义一个类 test 继承于 base_type</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test:ctor</span><span class="params">()</span></span>	<span class="comment">-- 定义 test 的构造函数</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"test ctor"</span>)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test:hello</span><span class="params">()</span></span>	<span class="comment">-- 重载 base_type:hello 为 test:hello</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"hello test"</span>)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> a=test.new(<span class="number">1</span>)	<span class="comment">-- 输出两行，base_type ctor 和 test ctor 。这个对象被正确的构造了。</span></span><br><span class="line">a:print_x()	<span class="comment">-- 输出 1 ，这个是基类 base_type 中的成员函数。</span></span><br><span class="line">a:hello()	<span class="comment">-- 输出 hello test ，这个函数被重载了。</span></span><br><span class="line">a:helloB()</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/10/markdown语法/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yu Bin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来视">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/10/markdown语法/" class="post-title-link" itemprop="url">markdown语法</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-10 23:18:39" itemprop="dateCreated datePublished" datetime="2019-03-10T23:18:39+08:00">2019-03-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-11 15:15:49" itemprop="dateModified" datetime="2019-03-11T15:15:49+08:00">2019-03-11</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/markdown/" itemprop="url" rel="index"><span itemprop="name">markdown</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p>Markdown语法主要分为如下几大部分：<br><strong>标题</strong>，<strong>段落</strong>，<strong>区块引用</strong>，<strong>代码区块</strong>，<strong>强调</strong>，<strong>列表</strong>，<strong>分割线</strong>，<strong>链接</strong>，<strong>图片</strong>，<strong>反斜杠 <code>\</code></strong>，<strong>符号<code>`</code></strong>。</p>
+<p>使用<code>#</code>，可表示1-6级标题。</p>
+<blockquote>
+<p># 一级标题<br>## 二级标题<br>### 三级标题<br>#### 四级标题<br>##### 五级标题<br>###### 六级标题</p>
+</blockquote>
+<p>效果：</p>
+<blockquote>
+<h1 id="一级标题"><a href="#一级标题" class="headerlink" title="一级标题"></a>一级标题</h1><h2 id="二级标题"><a href="#二级标题" class="headerlink" title="二级标题"></a>二级标题</h2><h3 id="三级标题"><a href="#三级标题" class="headerlink" title="三级标题"></a>三级标题</h3><h4 id="四级标题"><a href="#四级标题" class="headerlink" title="四级标题"></a>四级标题</h4><h5 id="五级标题"><a href="#五级标题" class="headerlink" title="五级标题"></a>五级标题</h5><h6 id="六级标题"><a href="#六级标题" class="headerlink" title="六级标题"></a>六级标题</h6></blockquote>
+<h4 id="段落"><a href="#段落" class="headerlink" title="段落"></a>段落</h4><p>段落的前后要有空行，所谓的空行是指没有文字内容。若想在段内强制换行的方式是使用<strong>两个以上</strong>空格加上回车（引用中换行省略回车）。</p>
+<h4 id="区块引用"><a href="#区块引用" class="headerlink" title="区块引用"></a>区块引用</h4><p>在段落的每行或者只在第一行使用符号<code>&gt;</code>,还可使用多个嵌套引用，如：</p>
+<blockquote>
+<p>> 区块引用<br>>&gt; 嵌套引用</p>
+</blockquote>
+<p>效果：</p>
+<blockquote>
+<p>区块引用</p>
+<blockquote>
+<p>嵌套引用</p>
+</blockquote>
+</blockquote>
+<h4 id="代码区块"><a href="#代码区块" class="headerlink" title="代码区块"></a>代码区块</h4><p>代码区块的建立是在每行加上4个空格或者一个制表符（如同写代码一样）。如<br>普通段落：</p>
+<p>void main()<br>{<br>    printf(“Hello, Markdown.”);<br>}</p>
+<p>代码区块：</p>
+<pre><code>void main()
+{
+    printf(&quot;Hello, Markdown.&quot;);
+}
+</code></pre><p><strong>注意</strong>:需要和普通段落之间存在空行。</p>
+<h4 id="强调"><a href="#强调" class="headerlink" title="强调"></a>强调</h4><p>在强调内容两侧分别加上<code>*</code>或者<code>_</code>，如：</p>
+<blockquote>
+<p>*斜体*，_斜体_<br>**粗体**，__粗体__</p>
+</blockquote>
+<p>效果：</p>
+<blockquote>
+<p><em>斜体</em>，_斜体_<br><strong>粗体</strong>，<strong>粗体</strong></p>
+</blockquote>
+<h4 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h4><p>使用<code>·</code>、<code>+</code>、或<code>-</code>标记无序列表，如：</p>
+<blockquote>
+<p>-（+*） 第一项<br>-（+*） 第二项<br>- （+*）第三项</p>
+</blockquote>
+<p><strong>注意</strong>：标记后面最少有一个_空格_或<em>制表符</em>。若不在引用区块中，必须和前方段落之间存在空行。</p>
+<p>效果：</p>
+<blockquote>
+<ul>
+<li>第一项</li>
+<li>第二项</li>
+<li>第三项</li>
+</ul>
+</blockquote>
+<p>有序列表的标记方式是将上述的符号换成数字,并辅以<code>.</code>，如：</p>
+<blockquote>
+<p>1 . 第一项<br>2 . 第二项<br>3 . 第三项</p>
+</blockquote>
+<p>效果：</p>
+<blockquote>
+<ol>
+<li>第一项</li>
+<li>第二项</li>
+<li>第三项</li>
+</ol>
+</blockquote>
+<h4 id="分割线"><a href="#分割线" class="headerlink" title="分割线"></a>分割线</h4><p>分割线最常使用就是三个或以上<code>*</code>，还可以使用<code>-</code>和<code>_</code>。</p>
+<h4 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h4><p>链接可以由两种形式生成：<strong>行内式</strong>和<strong>参考式</strong>。<br><strong>行内式</strong>：<br>[google](<a href="https://www.google.com" target="_blank" rel="noopener">https://www.google.com</a> )</p>
+<p>效果：<br><a href="https:://www.google.com" target="_blank" rel="noopener">google</a></p>
+<p><strong>参考式</strong>：<br>[google1][1]<br>[1]:https:://<a href="http://www.google.com" target="_blank" rel="noopener">www.google.com</a></p>
+<p>效果：<br><a href="https:://www.google.com" target="_blank" rel="noopener">google1</a></p>
+<p><strong>注意</strong>：上述的<code>[1]:https:://www.google.com</code>不出现在区块中。</p>
+<h4 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h4><p>添加图片的形式和链接相似，只需在链接的基础上前方加一个<code>！</code>。</p>
+<h4 id="0-反斜杠"><a href="#0-反斜杠" class="headerlink" title="0 反斜杠\"></a>0 反斜杠<code>\</code></h4><p>相当于<strong>反转义</strong>作用。使符号成为普通符号。</p>
+<h4 id="1-符号’-’"><a href="#1-符号’-’" class="headerlink" title="1 符号’`’"></a>1 符号’`’</h4><p>起到标记作用。如：</p>
+<blockquote>
+<p>`ctrl+a`</p>
+</blockquote>
+<p>效果：</p>
+<blockquote>
+<p><code>ctrl+a</code></p>
+</blockquote>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https:://github.com/younghz/Markdown" target="_blank" rel="noopener">younghz的Markdown库</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/10/git中文乱码/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yu Bin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来视">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/10/git中文乱码/" class="post-title-link" itemprop="url">git中文乱码</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-10 22:11:39" itemprop="dateCreated datePublished" datetime="2019-03-10T22:11:39+08:00">2019-03-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-11 15:15:49" itemprop="dateModified" datetime="2019-03-11T15:15:49+08:00">2019-03-11</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/git/" itemprop="url" rel="index"><span itemprop="name">git</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="git输出日志或者查看状态时会显示乱码，会显示形如-XXX-的乱码。"><a href="#git输出日志或者查看状态时会显示乱码，会显示形如-XXX-的乱码。" class="headerlink" title="git输出日志或者查看状态时会显示乱码，会显示形如 \XXX 的乱码。"></a>git输出日志或者查看状态时会显示乱码，会显示形如 \XXX 的乱码。</h3><ol>
+<li><code>git config --global core.quotepath false</code></li>
+<li>core.quotepath设为false的话，就不会对0x80以上的字符进行quote。中文显示正常</li>
+</ol>
+<h3 id="使用git-log显示提交的中文log乱码"><a href="#使用git-log显示提交的中文log乱码" class="headerlink" title="使用git log显示提交的中文log乱码"></a>使用git log显示提交的中文log乱码</h3><p>解决方案：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --global i18n.commitencoding utf-8</span><br><span class="line">git config --global i18n.logoutputencoding utf-8</span><br><span class="line"><span class="built_in">export</span> LESSCHARSET=utf-8</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/09/预乘Alpha/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -362,12 +948,24 @@
                 
               
 
-              <time title="Created: 2019-03-09 09:50:19 / Modified: 11:17:41" itemprop="dateCreated datePublished" datetime="2019-03-09T09:50:19+08:00">2019-03-09</time>
+              <time title="Created: 2019-03-09 09:50:19" itemprop="dateCreated datePublished" datetime="2019-03-09T09:50:19+08:00">2019-03-09</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-11 15:15:49" itemprop="dateModified" datetime="2019-03-11T15:15:49+08:00">2019-03-11</time>
               
             
           </span>
@@ -437,24 +1035,25 @@
 <li>shader里在直接使用color * alpha,那么在混用阶段还是可以使用预乘的公式</li>
 <li>调整alpha的混用公式</li>
 </ol>
-<p>引擎是1和3的方案,但是在使用3方案时没有使用分开设置参数的接口,而是使用<code>glBlendFunc</code>接口统一设置参数,在正常情况下对RGB的计算是正确的,但是A通道的值计算就会产生问题,不再是上面的公式里的参数<br>示例: </p>
+<p>引擎是1和3的方案,但是在使用3方案时没有使用分开设置参数的接口,而是使用<code>glBlendFunc</code>接口统一设置参数,在正常情况下对RGB的计算是正确的,但是A通道的值计算就会产生问题,不再是上面的公式里的参数<br>示例:</p>
 <p>假设A纯灰色前景(1.0,1.0,1.0,0.5) ,B纯黑色背景(0,0,0,0) 正常情况下混合的结果是</p>
 <p><code>A * B = (0.5,0.5,0.5,0.5)</code></p>
 <p><code>alpha值 = (1.0 * 0.5) + (1- 0.5) * 0.0 = 0.5</code></p>
-<p>而现在变成 </p>
+<p>而现在变成</p>
 <p><code>A * B = (0.5,0.5,0,5,0.25)</code></p>
 <p><code>alpha值 = (0.5 * 0.5) + (1- 0.5) * 0.0 = 0.25</code></p>
-<p>产生的结果是不正确的,回到开始的问题,引擎中的layercoler就是非预乘的混合参数,然后使用3的方案来修正,但是结果alpha通道的值就是不正确的.<br>假设A为纯灰色前景(1.0,1.0,1.0,0.5) ,B为纯白色背景(1.0,1.0,1.0,1.0) 正常情况下混合的结果是</p>
-<p>$ A_a * B = (1.0,1.0,1.0,1.0) $</p>
+<p>产生的结果是不正确的,回到开始的问题,引擎中的layercoler就是非预乘的混合参数,然后使用3的方案来修正.<br>假设A为纯灰色前景(1.0,1.0,1.0,0.5) ,B为纯白色背景(1.0,1.0,1.0,1.0) 正常情况下混合的结果是</p>
+<p><code>A * B = (1.0,1.0,1.0,1.0)</code></p>
 <p><code>alpha值 = (1.0 * 0.5) + (1- 0.5) * 1.0 = 1.0</code></p>
-<p>而现在变成 </p>
+<p>而现在变成</p>
 <p><code>A * B = (1.0,1.0,1.0,,0.25)</code></p>
 <p><code>alpha值 = (0.5 * 0.5) + (1- 0.5) * 1.0 = 0.75</code></p>
-<p>从结果上来看色值是正确的,但通道值不是正常的1.0值,所以如果再拿RT的纹理混上其他背景就会产生不正确的结果</p>
+<p>从结果上来看色值是正确的,但通道值不是正常的1.0值,所以如果再拿RT的纹理混上其他背景就会产生不正确的结果,会产生透明的效果</p>
 <h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><ol>
 <li>使用方案2,修改所有使用到的shader,对于alphablend阶段都是使用预乘的公式</li>
 <li>使用<code>glBlendFuncSeperate</code>修改非预乘时的设置参数接口,分开设置RGB与A的计算参数,保证A通道的计算结果是正确的</li>
 </ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://zh.wikipedia.org/wiki/Alpha%E5%90%88%E6%88%90" target="_blank" rel="noopener">混合</a><br><a href="https://zh.wikipedia.org/wiki/Alpha%E5%90%88%E6%88%90" target="_blank" rel="noopener">Alpha合成</a></p>
 
           
         
@@ -1249,7 +1848,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-count">8</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1268,7 +1867,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">3</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -1289,7 +1894,23 @@
                     
                       
                     
-                    <span class="site-state-item-count">4</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
