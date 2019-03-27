@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="theme-next gemini" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1.Bump纹理1234567891011121314151617181920212223242526272829303132333435363738394041424344454647Shader &amp;quot;Custom/S_Bump&amp;quot; &amp;#123;    Properties &amp;#123;        _MainTex (&amp;quot;Texture&amp;quot;, 2D) = &amp;q">
+<meta name="keywords" content="unity,shader">
+<meta property="og:type" content="article">
+<meta property="og:title" content="unity-shader-examples">
+<meta property="og:url" content="http://yoursite.com/2019/03/27/unity-shader-examples/index.html">
+<meta property="og:site_name" content="未来视">
+<meta property="og:description" content="1.Bump纹理1234567891011121314151617181920212223242526272829303132333435363738394041424344454647Shader &amp;quot;Custom/S_Bump&amp;quot; &amp;#123;    Properties &amp;#123;        _MainTex (&amp;quot;Texture&amp;quot;, 2D) = &amp;q">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-03-27T09:53:46.061Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="unity-shader-examples">
+<meta name="twitter:description" content="1.Bump纹理1234567891011121314151617181920212223242526272829303132333435363738394041424344454647Shader &amp;quot;Custom/S_Bump&amp;quot; &amp;#123;    Properties &amp;#123;        _MainTex (&amp;quot;Texture&amp;quot;, 2D) = &amp;q">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/03/27/unity-shader-examples/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>unity-shader-examples | 未来视</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">未来视</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/27/unity-shader-examples/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yu Bin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来视">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">unity-shader-examples
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-27 16:47:28 / Modified: 17:53:46" itemprop="dateCreated datePublished" datetime="2019-03-27T16:47:28+08:00">2019-03-27</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/unity/" itemprop="url" rel="index"><span itemprop="name">unity</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="1-Bump纹理"><a href="#1-Bump纹理" class="headerlink" title="1.Bump纹理"></a>1.Bump纹理</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">Shader &quot;Custom/S_Bump&quot; &#123;</span><br><span class="line">    Properties &#123;</span><br><span class="line">        _MainTex (&quot;Texture&quot;, 2D) = &quot;white&quot; &#123;&#125;</span><br><span class="line">        _BumpMap (&quot;Bump&quot;, 2D) = &quot;bump&quot; &#123;&#125;</span><br><span class="line">        _RimColor (&quot;Rim Color&quot;,Color) = (0.17,0.36,0.81,0.0)</span><br><span class="line">        _RimPower (&quot;Rim Power&quot;, Range(0.6,9.0)) = 1.0</span><br><span class="line">    &#125;</span><br><span class="line">    SubShader &#123;</span><br><span class="line">        Tags &#123; &quot;RenderType&quot;=&quot;Opaque&quot; &#125;</span><br><span class="line">        LOD 200</span><br><span class="line"></span><br><span class="line">        CGPROGRAM</span><br><span class="line">        // Physically based Standard lighting model, and enable shadows on all light types</span><br><span class="line">        #pragma surface surf Standard fullforwardshadows</span><br><span class="line"></span><br><span class="line">        // Use shader model 3.0 target, to get nicer looking lighting</span><br><span class="line">        #pragma target 3.0</span><br><span class="line"></span><br><span class="line">        sampler2D _MainTex;</span><br><span class="line">        sampler2D _BumpMap;</span><br><span class="line">        float4 _RimColor;</span><br><span class="line">        float _RimPower;</span><br><span class="line"></span><br><span class="line">        struct Input &#123;</span><br><span class="line">            float2 uv_MainTex;</span><br><span class="line">            float2 uv_BumpMap;</span><br><span class="line">            float3 viewDir;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        void surf (Input IN, inout SurfaceOutputStandard o) &#123;</span><br><span class="line">            // Albedo comes from a texture tinted by color</span><br><span class="line">            fixed4 c = tex2D (_MainTex, IN.uv_MainTex);</span><br><span class="line">            o.Albedo = c.rgb;</span><br><span class="line"></span><br><span class="line">            o.Normal = UnpackNormal(tex2D(_BumpMap,IN.uv_BumpMap));</span><br><span class="line"></span><br><span class="line">            half rim = 1.0 - saturate(dot(normalize(IN.viewDir),o.Normal));</span><br><span class="line"></span><br><span class="line">            o.Emission = _RimColor.rgb * pow(rim,_RimPower);</span><br><span class="line"></span><br><span class="line">            o.Alpha = c.a;</span><br><span class="line">        &#125;</span><br><span class="line">        ENDCG</span><br><span class="line">    &#125;</span><br><span class="line">    FallBack &quot;Diffuse&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-自定义光照"><a href="#2-自定义光照" class="headerlink" title="2.自定义光照"></a>2.自定义光照</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line">Shader &quot;S_Light&quot; </span><br><span class="line">&#123;  </span><br><span class="line">    //--------------------------------【属性】---------------------------------------- </span><br><span class="line">    Properties   </span><br><span class="line">    &#123;  </span><br><span class="line">        _MainTex (&quot;【主纹理】Texture&quot;, 2D) = &quot;white&quot; &#123;&#125;  </span><br><span class="line">        _Ramp (&quot;【渐变纹理】Ramp Texture&quot;, 2D) = &quot;white&quot;&#123;&#125;  </span><br><span class="line">        _BumpMap (&quot;【凹凸纹理】Bumpmap&quot;, 2D) = &quot;bump&quot; &#123;&#125;  </span><br><span class="line">        _Detail (&quot;【细节纹理】Detail&quot;, 2D) = &quot;gray&quot; &#123;&#125;  </span><br><span class="line">        _RimColor (&quot;【边缘颜色】Rim Color&quot;, Color) = (0.26,0.19,0.16,0.0)  </span><br><span class="line">        _RimPower (&quot;【边缘颜色强度】Rim Power&quot;, Range(0.5,8.0)) = 3.0  </span><br><span class="line">    &#125;  </span><br><span class="line"></span><br><span class="line">    //--------------------------------【子着色器】----------------------------------</span><br><span class="line">    SubShader </span><br><span class="line">    &#123;  </span><br><span class="line">        //-----------子着色器标签----------  </span><br><span class="line">        Tags &#123; &quot;RenderType&quot;=&quot;Opaque&quot; &#125;  </span><br><span class="line">        LOD 200  </span><br><span class="line"></span><br><span class="line">        //-------------------开始CG着色器编程语言段-----------------  </span><br><span class="line">        CGPROGRAM  </span><br><span class="line"></span><br><span class="line">        //【1】光照模式声明：使用自制的卡通渐变光照模式 + 自定义颜色函数--注意名字要与下文的对上</span><br><span class="line">        #pragma surface surf QianMoCartoonShader finalcolor:setcolor</span><br><span class="line"></span><br><span class="line">        //变量声明  </span><br><span class="line">        sampler2D _MainTex;  </span><br><span class="line">        sampler2D _Ramp;  </span><br><span class="line">        sampler2D _BumpMap;  </span><br><span class="line">        sampler2D _Detail;  </span><br><span class="line">        float4 _RimColor;  </span><br><span class="line">        float _RimPower;  </span><br><span class="line"></span><br><span class="line">        //【2】实现自制的卡通渐变光照模式--名字要与上文中对上</span><br><span class="line">        inline float4 LightingQianMoCartoonShader(SurfaceOutput s, fixed3 lightDir, fixed atten)  </span><br><span class="line">        &#123;  </span><br><span class="line">            //点乘反射光线法线和光线方向</span><br><span class="line">            half NdotL = dot (s.Normal, lightDir); </span><br><span class="line">            //增强光强</span><br><span class="line">            half diff = NdotL * 0.5 + 0.5;</span><br><span class="line">            //从纹理中定义渐变效果</span><br><span class="line">            half3 ramp = tex2D (_Ramp, float2(diff,diff)).rgb;</span><br><span class="line">            //计算出最终结果</span><br><span class="line">            half4 color;</span><br><span class="line">            color.rgb = s.Albedo * _LightColor0.rgb * ramp * (atten * 2);</span><br><span class="line">            color.a = s.Alpha;</span><br><span class="line"></span><br><span class="line">            return color;</span><br><span class="line">        &#125;  </span><br><span class="line"></span><br><span class="line">        //【3】自定义颜色函数setcolor的编写</span><br><span class="line">        void setcolor (Input IN, SurfaceOutput o, inout fixed4 color)</span><br><span class="line">        &#123;</span><br><span class="line">            color *= _ColorTint;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //【4】输入结构    </span><br><span class="line">        struct Input   </span><br><span class="line">        &#123;  </span><br><span class="line">            //主纹理的uv值  </span><br><span class="line">            float2 uv_MainTex;  </span><br><span class="line">            //凹凸纹理的uv值  </span><br><span class="line">            float2 uv_BumpMap;  </span><br><span class="line">            //细节纹理的uv值  </span><br><span class="line">            float2 uv_Detail;   </span><br><span class="line">            //当前坐标的视角方向  </span><br><span class="line">            float3 viewDir;  </span><br><span class="line">        &#125;;  </span><br><span class="line"></span><br><span class="line">        </span><br><span class="line">        //【5】表面着色函数的编写</span><br><span class="line">        void surf (Input IN, inout SurfaceOutput o)  </span><br><span class="line">        &#123;  </span><br><span class="line">             //先从主纹理获取rgb颜色值  </span><br><span class="line">            o.Albedo = tex2D (_MainTex, IN.uv_MainTex).rgb;     </span><br><span class="line">            //设置细节纹理  </span><br><span class="line">            o.Albedo *= tex2D (_Detail, IN.uv_Detail).rgb * 2;   </span><br><span class="line">            //从凹凸纹理获取法线值  </span><br><span class="line">            o.Normal = UnpackNormal (tex2D (_BumpMap, IN.uv_BumpMap));  </span><br><span class="line">            //从_RimColor参数获取自发光颜色  </span><br><span class="line">            half rim = 1.0 - saturate(dot (normalize(IN.viewDir), o.Normal));  </span><br><span class="line">            o.Emission = _RimColor.rgb * pow (rim, _RimPower);  </span><br><span class="line"></span><br><span class="line">        &#125;  </span><br><span class="line"></span><br><span class="line">        //-------------------结束CG着色器编程语言段------------------</span><br><span class="line">        ENDCG  </span><br><span class="line">    &#125;   </span><br><span class="line">    FallBack &quot;Diffuse&quot;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://docs.unity3d.com/Manual/SL-SurfaceShaders.html" target="_blank" rel="noopener">Unity3D</a><br><a href="https://github.com/QianMo/Awesome-Unity-Shader" target="_blank" rel="noopener">关于炫酷的Unity3D Shader</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/unity/" rel="tag"># unity</a>
+          
+            <a href="/tags/shader/" rel="tag"># shader</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/26/unity-shader/" rel="next" title="unity-shader">
+                <i class="fa fa-chevron-left"></i> unity-shader
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Yu Bin</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Bump纹理"><span class="nav-number">1.</span> <span class="nav-text">1.Bump纹理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-自定义光照"><span class="nav-number">2.</span> <span class="nav-text">2.自定义光照</span></a></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number"></span> <span class="nav-text">参考</span></a></li></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yu Bin</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+  
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
