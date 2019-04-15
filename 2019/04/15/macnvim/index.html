@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="theme-next gemini" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="畅想  有感于macvim不想接入neovim做为后端NeoVim,平时工作当中使用macvim较多,又想使用nvim替代vim.这里只是做一下畅想,macvim + neovim = macnvim 相关源代码工程 vim macvim neovim neovim-dot-app neovim的工作方式123456789Neovim ------&amp;gt; GUI 1 (attach/detach">
+<meta name="keywords" content="macvim,neovim,nvim,macnvim">
+<meta property="og:type" content="article">
+<meta property="og:title" content="macnvim">
+<meta property="og:url" content="http://yoursite.com/2019/04/15/macnvim/index.html">
+<meta property="og:site_name" content="未来视">
+<meta property="og:description" content="畅想  有感于macvim不想接入neovim做为后端NeoVim,平时工作当中使用macvim较多,又想使用nvim替代vim.这里只是做一下畅想,macvim + neovim = macnvim 相关源代码工程 vim macvim neovim neovim-dot-app neovim的工作方式123456789Neovim ------&amp;gt; GUI 1 (attach/detach">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-15T07:42:57.009Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="macnvim">
+<meta name="twitter:description" content="畅想  有感于macvim不想接入neovim做为后端NeoVim,平时工作当中使用macvim较多,又想使用nvim替代vim.这里只是做一下畅想,macvim + neovim = macnvim 相关源代码工程 vim macvim neovim neovim-dot-app neovim的工作方式123456789Neovim ------&amp;gt; GUI 1 (attach/detach">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/15/macnvim/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>macnvim | 未来视</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">未来视</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/15/macnvim/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yu Bin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来视">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">macnvim
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-04-15 14:44:36 / Modified: 15:42:57" itemprop="dateCreated datePublished" datetime="2019-04-15T14:44:36+08:00">2019-04-15</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/vim/" itemprop="url" rel="index"><span itemprop="name">vim</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="畅想"><a href="#畅想" class="headerlink" title="畅想"></a>畅想</h2><p>  有感于macvim不想接入neovim做为后端<a href="https://github.com/macvim-dev/macvim/issues/47" target="_blank" rel="noopener">NeoVim</a>,平时工作当中使用macvim较多,又想使用nvim替代vim.这里只是做一下畅想,<code>macvim + neovim = macnvim</code></p>
+<h2 id="相关源代码工程"><a href="#相关源代码工程" class="headerlink" title="相关源代码工程"></a>相关源代码工程</h2><p> <a href="https://github.com/vim/vim" target="_blank" rel="noopener">vim</a><br> <a href="https://github.com/macvim-dev/macvim" target="_blank" rel="noopener">macvim</a><br> <a href="https://github.com/neovim/neovim" target="_blank" rel="noopener">neovim</a><br> <a href="https://github.com/rogual/neovim-dot-app" target="_blank" rel="noopener">neovim-dot-app</a></p>
+<h2 id="neovim的工作方式"><a href="#neovim的工作方式" class="headerlink" title="neovim的工作方式"></a>neovim的工作方式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Neovim ------&gt; GUI 1 (attach/detach to running instance)</span><br><span class="line">  |  |</span><br><span class="line">  |   `------&gt; GUI 2 (communicating on a different socket or transport</span><br><span class="line">  |                   mechanism, but sharing the same session with GUI 1)</span><br><span class="line">   `--&gt; Plugin 1</span><br><span class="line">  |</span><br><span class="line">   `--&gt; Plugin 2</span><br><span class="line">  |</span><br><span class="line">   `--&gt; Plugin 3</span><br></pre></td></tr></table></figure>
+<p>   neovim使用rpc方式使数据层与ui的显示层解耦,类似于x服务,核心的功能尽量小而全,与ui相关的交互通过事件或者消息的方式通知</p>
+<h2 id="macvim的工作方式"><a href="#macvim的工作方式" class="headerlink" title="macvim的工作方式"></a>macvim的工作方式</h2><p>   引用macvim文档当中的话</p>
+<blockquote>
+<p>Each editor window in MacVim runs its own Vim process (but there is always<br>only one MacVim process).  Communication between MacVim and a Vim process is<br>done using Distributed Objects (DO).  Each Vim process is represented by a<br>backend object (MMBackend) and it communicates with the frontend object in the<br>Vim process (MMAppController).  The interface between the backend and frontend<br>is defined in MacVim.h.</p>
+<p>The frontend sends input to the backend by calling<br>-[MMBackend processInput:data:].  The backend queues output on a command queue<br>and sends it to the frontend at opportune times by calling<br>-[MMAppController processInput:forIdentifier:].  These are both asynchronous<br>calls so MacVim can keep drawing and receiving input while Vim is working away,<br>thus always keeping the user interface responsive.</p>
+<p>The state of each editor window is kept entirely in the Vim process.  MacVim<br>should remain “ignorant” in the sense that it knows nothing of the actual<br>state of a Vim process.  Typically this is not a problem, but sometimes MacVim<br>must change state without going via Vim, and sometimes MacVim needs immediate<br>access to the state from Vim.  The former happens e.g. when the user drags to<br>resize a window (MacVim changes the window dimensions immediately withoutn<br>asking Vim first), the second can happen when some option variable affects the<br>way something is presented visually (e.g. MacVim needs immediate access to the<br>‘mousehide’ option so that it can hide the mouse cursor when input is<br>received).  State information that may be required in this way can be “pushed”<br>to MacVim inside -[MMBackend queueVimStateMessage].<br>Vim:</p>
+<p>Hooks from within Vim are implemented in gui_macvim.m, the name of such<br>functions usually start with “gui_mch_” and they should simply put a message<br>on the output queue, by calling queueMessage:properties: on the singleton<br>MMBackend object [MMBackend sharedInstance] (see e.g. gui_mch_destroy_menu()).<br>The output queue is flushed when requested (in -[MMBackend flushQueue]) or<br>before Vim takes a nap whilst waiting for new input (in<br>-[MMBackend waitForInput]).</p>
+</blockquote>
+<p>通过以上可知,macvim的实现方式也是将ui的相关操作通过事件或者消息来通知主界面原生的ui做相应的处理,这与neovim现有的框架设计是不谋而合,只是macvim定义的各种事件与neovim定义的各种事件有不一样的地方.</p>
+<h2 id="关于neovim-dot-app"><a href="#关于neovim-dot-app" class="headerlink" title="关于neovim-dot-app"></a>关于neovim-dot-app</h2><p>   neovim-dot-app的实现方式,先通过fork的方式运行nvim做为后端进程,然后使用stdin做为管道用于主界面与后端neovim之间的通信.相对于macvim的代码量,就几个简单类,所以实现的功能也比较有限.</p>
+<h2 id="畅想-1"><a href="#畅想-1" class="headerlink" title="畅想"></a>畅想</h2><p>   通过几个工程的源代码分析,可以看前后端都是基于rpc的方式来通信,因此有以下的二种方案</p>
+<ol>
+<li>将macvim的MMBackend移植到neovim,理论上可以不修改macvim就支持neovim(^_^),但这样就破坏了neovim的规范,也合macvim与特定的neovim绑定在一起,只能使用自已的版本.</li>
+<li>调整macvim的<code>NSConnection</code>通信方式,使用socket/stdin来通信,并且要适配好neovim的协议到macvim本身的协议,这样的实现与后面neovim解耦,可以各自演化以达到neovim的设计初衷.</li>
+</ol>
+<h2 id="梦醒"><a href="#梦醒" class="headerlink" title="梦醒"></a>梦醒</h2><p>   个人倾向于使用第二种方案来实现,无奈oc水平有限,就些作罢..这里只提供思路,期待后期有志之士实现了(<em>_</em>)</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/macvim/" rel="tag"># macvim</a>
+          
+            <a href="/tags/neovim/" rel="tag"># neovim</a>
+          
+            <a href="/tags/nvim/" rel="tag"># nvim</a>
+          
+            <a href="/tags/macnvim/" rel="tag"># macnvim</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/28/bgfx/" rel="next" title="bgfx">
+                <i class="fa fa-chevron-left"></i> bgfx
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Yu Bin</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">23</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#畅想"><span class="nav-number">1.</span> <span class="nav-text">畅想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关源代码工程"><span class="nav-number">2.</span> <span class="nav-text">相关源代码工程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#neovim的工作方式"><span class="nav-number">3.</span> <span class="nav-text">neovim的工作方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#macvim的工作方式"><span class="nav-number">4.</span> <span class="nav-text">macvim的工作方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于neovim-dot-app"><span class="nav-number">5.</span> <span class="nav-text">关于neovim-dot-app</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#畅想-1"><span class="nav-number">6.</span> <span class="nav-text">畅想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#梦醒"><span class="nav-number">7.</span> <span class="nav-text">梦醒</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yu Bin</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+  
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -317,6 +317,552 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/15/macnvim/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yu Bin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来视">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/15/macnvim/" class="post-title-link" itemprop="url">macnvim</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-04-15 14:44:36 / Modified: 15:42:57" itemprop="dateCreated datePublished" datetime="2019-04-15T14:44:36+08:00">2019-04-15</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/vim/" itemprop="url" rel="index"><span itemprop="name">vim</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="畅想"><a href="#畅想" class="headerlink" title="畅想"></a>畅想</h2><p>  有感于macvim不想接入neovim做为后端<a href="https://github.com/macvim-dev/macvim/issues/47" target="_blank" rel="noopener">NeoVim</a>,平时工作当中使用macvim较多,又想使用nvim替代vim.这里只是做一下畅想,<code>macvim + neovim = macnvim</code></p>
+<h2 id="相关源代码工程"><a href="#相关源代码工程" class="headerlink" title="相关源代码工程"></a>相关源代码工程</h2><p> <a href="https://github.com/vim/vim" target="_blank" rel="noopener">vim</a><br> <a href="https://github.com/macvim-dev/macvim" target="_blank" rel="noopener">macvim</a><br> <a href="https://github.com/neovim/neovim" target="_blank" rel="noopener">neovim</a><br> <a href="https://github.com/rogual/neovim-dot-app" target="_blank" rel="noopener">neovim-dot-app</a></p>
+<h2 id="neovim的工作方式"><a href="#neovim的工作方式" class="headerlink" title="neovim的工作方式"></a>neovim的工作方式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Neovim ------&gt; GUI 1 (attach/detach to running instance)</span><br><span class="line">  |  |</span><br><span class="line">  |   `------&gt; GUI 2 (communicating on a different socket or transport</span><br><span class="line">  |                   mechanism, but sharing the same session with GUI 1)</span><br><span class="line">   `--&gt; Plugin 1</span><br><span class="line">  |</span><br><span class="line">   `--&gt; Plugin 2</span><br><span class="line">  |</span><br><span class="line">   `--&gt; Plugin 3</span><br></pre></td></tr></table></figure>
+<p>   neovim使用rpc方式使数据层与ui的显示层解耦,类似于x服务,核心的功能尽量小而全,与ui相关的交互通过事件或者消息的方式通知</p>
+<h2 id="macvim的工作方式"><a href="#macvim的工作方式" class="headerlink" title="macvim的工作方式"></a>macvim的工作方式</h2><p>   引用macvim文档当中的话</p>
+<blockquote>
+<p>Each editor window in MacVim runs its own Vim process (but there is always<br>only one MacVim process).  Communication between MacVim and a Vim process is<br>done using Distributed Objects (DO).  Each Vim process is represented by a<br>backend object (MMBackend) and it communicates with the frontend object in the<br>Vim process (MMAppController).  The interface between the backend and frontend<br>is defined in MacVim.h.</p>
+<p>The frontend sends input to the backend by calling<br>-[MMBackend processInput:data:].  The backend queues output on a command queue<br>and sends it to the frontend at opportune times by calling<br>-[MMAppController processInput:forIdentifier:].  These are both asynchronous<br>calls so MacVim can keep drawing and receiving input while Vim is working away,<br>thus always keeping the user interface responsive.</p>
+<p>The state of each editor window is kept entirely in the Vim process.  MacVim<br>should remain “ignorant” in the sense that it knows nothing of the actual<br>state of a Vim process.  Typically this is not a problem, but sometimes MacVim<br>must change state without going via Vim, and sometimes MacVim needs immediate<br>access to the state from Vim.  The former happens e.g. when the user drags to<br>resize a window (MacVim changes the window dimensions immediately withoutn<br>asking Vim first), the second can happen when some option variable affects the<br>way something is presented visually (e.g. MacVim needs immediate access to the<br>‘mousehide’ option so that it can hide the mouse cursor when input is<br>received).  State information that may be required in this way can be “pushed”<br>to MacVim inside -[MMBackend queueVimStateMessage].<br>Vim:</p>
+<p>Hooks from within Vim are implemented in gui_macvim.m, the name of such<br>functions usually start with “gui_mch_” and they should simply put a message<br>on the output queue, by calling queueMessage:properties: on the singleton<br>MMBackend object [MMBackend sharedInstance] (see e.g. gui_mch_destroy_menu()).<br>The output queue is flushed when requested (in -[MMBackend flushQueue]) or<br>before Vim takes a nap whilst waiting for new input (in<br>-[MMBackend waitForInput]).</p>
+</blockquote>
+<p>通过以上可知,macvim的实现方式也是将ui的相关操作通过事件或者消息来通知主界面原生的ui做相应的处理,这与neovim现有的框架设计是不谋而合,只是macvim定义的各种事件与neovim定义的各种事件有不一样的地方.</p>
+<h2 id="关于neovim-dot-app"><a href="#关于neovim-dot-app" class="headerlink" title="关于neovim-dot-app"></a>关于neovim-dot-app</h2><p>   neovim-dot-app的实现方式,先通过fork的方式运行nvim做为后端进程,然后使用stdin做为管道用于主界面与后端neovim之间的通信.相对于macvim的代码量,就几个简单类,所以实现的功能也比较有限.</p>
+<h2 id="畅想-1"><a href="#畅想-1" class="headerlink" title="畅想"></a>畅想</h2><p>   通过几个工程的源代码分析,可以看前后端都是基于rpc的方式来通信,因此有以下的二种方案</p>
+<ol>
+<li>将macvim的MMBackend移植到neovim,理论上可以不修改macvim就支持neovim(^_^),但这样就破坏了neovim的规范,也合macvim与特定的neovim绑定在一起,只能使用自已的版本.</li>
+<li>调整macvim的<code>NSConnection</code>通信方式,使用socket/stdin来通信,并且要适配好neovim的协议到macvim本身的协议,这样的实现与后面neovim解耦,可以各自演化以达到neovim的设计初衷.</li>
+</ol>
+<h2 id="梦醒"><a href="#梦醒" class="headerlink" title="梦醒"></a>梦醒</h2><p>   个人倾向于使用第二种方案来实现,无奈oc水平有限,就些作罢..这里只提供思路,期待后期有志之士实现了(<em>_</em>)</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/28/bgfx/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yu Bin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来视">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/28/bgfx/" class="post-title-link" itemprop="url">bgfx</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-28 20:45:02" itemprop="dateCreated datePublished" datetime="2019-03-28T20:45:02+08:00">2019-03-28</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-29 08:49:47" itemprop="dateModified" datetime="2019-03-29T08:49:47+08:00">2019-03-29</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/bgfx/" itemprop="url" rel="index"><span itemprop="name">bgfx</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h2><ul>
+<li>多后端,多平台支持</li>
+<li>多线程并行渲染(基于command buffer)</li>
+<li>渲染状态batch的渲染器</li>
+</ul>
+<h2 id="并行渲染实现"><a href="#并行渲染实现" class="headerlink" title="并行渲染实现"></a>并行渲染实现</h2><ol>
+<li>命令的序列化<br>逻辑线程将调用序列化并存储后交由渲染线程执行</li>
+<li>资源handle化<br>由于调用并不能立即得到结果，只能以返回句柄的方式给应用层，引擎要处理好句柄与真正资源之间的转化。应用层只使用handle,渲染线程在真正使用时将handle转化为真正的资源</li>
+</ol>
+<h2 id="结构解析"><a href="#结构解析" class="headerlink" title="结构解析"></a>结构解析</h2><h3 id="Context"><a href="#Context" class="headerlink" title="Context"></a>Context</h3><p>渲染引擎的上下文,对外接口总入口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">//渲染一帧</span><br><span class="line">BGFX_API_FUNC(uint32_t frame(bool _capture = false) );</span><br><span class="line">//渲染线程的入口</span><br><span class="line">RenderFrame::Enum renderFrame(int32_t _msecs = -1);</span><br><span class="line">//逻辑线程与渲染线程的同步</span><br><span class="line">// Render thread shutdown sequence.</span><br><span class="line">encoderApiWait();</span><br><span class="line">renderSemWait(); // Wait for previous frame.</span><br><span class="line">apiSemPost();   // OK to set context to NULL.</span><br><span class="line">// s_ctx is NULL here.</span><br><span class="line">renderSemWait(); // In RenderFrame::Exiting state.</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h3 id="Frame"><a href="#Frame" class="headerlink" title="Frame"></a>Frame</h3><p>渲染线程的数据存储，开启多纯种时有二个结构<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">struct Context&#123;</span><br><span class="line">...</span><br><span class="line">Frame* m_render;//渲染线程使用--执行其中的命令</span><br><span class="line">Frame* m_submit;//逻辑线程使用--添加命令</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>swap的时候会将二个Frame内容交换<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">struct Frame&#123;</span><br><span class="line">...</span><br><span class="line">    CommandBuffer m_cmdPre; --命令组，渲染命令前</span><br><span class="line">    CommandBuffer m_cmdPost; --命令组，渲染命令后</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Views"><a href="#Views" class="headerlink" title="Views"></a>Views</h3><blockquote>
+<p>View is primary sorting mechanism in bgfx. View represent bucket of draw and compute calls. Compute and draw calls inside bucket are sorted in the way that all compute calls are executed before draw calls. Compute calls are always in order of submission, while draw calls are sorted by internal state if view is not in sequential mode. In the most of cases when z-buffer is used this change in order is not noticable to desired output. In cases where order has to be preserved (for example in rendering GUIs), view can be set to be in sequential order. Sequential order is less efficient, because it doesn’t allow state change optimization, and should be avoided when possible.</p>
+</blockquote>
+<p>view可以用来管理一组命令</p>
+<h3 id="Encoder-EncoderImpl"><a href="#Encoder-EncoderImpl" class="headerlink" title="Encoder(EncoderImpl)"></a>Encoder(EncoderImpl)</h3><blockquote>
+<p>Encoders are used for submitting draw calls from multiple threads. Only one encoder per thread should be used. Use bgfx::begin() to obtain an encoder for a thread</p>
+</blockquote>
+<p>多个线程来增加执行命令，每个Encoder使用各自的UniformBuffer<br>接口中设置的渲染数据可以分为两类，一类是和View相关的如 setViewRect 之类的，这类会直接通过 Context 的成员函数进行设置，另一类是setUniform等和View无关的，这类会通过 Context 的 Encoder 间接调用对应的接口，而这些接口调用又通过一个定义的宏 BGFX_ENCODER 转接到 EncoderImpl 上去（在项目中经常看到这样类似的宏），而 EncoderImpl 中大多就是将这些参数写入一个个Buffer或者其内部数据成员中，最终在 renderer_gl.cpp 之类对应驱动的渲染器内部的 submit 等接口中，通过将数据存储在 Frame 里的 RenderItem 再里面的 RenderDraw 等一系列对象中，并在该接口内部完成绑定。<br>而 EncoderImpl 保存数据的 Frame 和 bgfx 传递给具体 Renderer（即 m_render ） 的 submit 的 Frame 是怎么同步的呢，这里其实在 Context::begin 的时候会调用 EncoderImpl::begin ，同时传入其 m_submit 成员，而该成员在非多线程的情况下与 m_render 是同一个对象，而至于在多线程情况下目前还没有研究到。</p>
+<h3 id="CommandBuffer"><a href="#CommandBuffer" class="headerlink" title="CommandBuffer"></a>CommandBuffer</h3><p>bgfx 的顶点数据等信息的设置，都是先缓存在类似 RenderDraw 之类的对象中，RenderDraw 这些对象又缓存在对应的 Encoder 中，Encoder 又依附在 Context 上，最后渲染的时候将这些信息一个个commit批量使用gl命令来进行实际的执行操作，这样可以在这里做batch等优化操作。<br>这些渲染命令分为在渲染前执行和渲染后执行两种，统一由 CommandBuffer 来管理，bgfx 是在用户调用createXXXBuffer （如创建顶点数据Buffer）之类接口调用时，间接调用 Context 的 createXXXBuffer，其内部以 Buffer 的类型（在 CommandBuffer 中用枚举定义了各种命令类型）来判断是用前置命令还是后置命令（通过 getCommandBuffer 来获取），然后使用不同的 CommandBuffer（前置为 m_submit-&gt;m_cmdPre，后置为 m_submit-&gt;m_cmdPost ）来写入数据，接下来在renderFrame的时候再从这两个Buffer里读取此前写入的数据，并调用对应驱动如 renderer_gl.cpp 下的 RendererContextI 来设置数据。<br>CommandBuffer 主要用于创建 VertexBuffer、Shader等GL资源或者执行GL指令，而 Encoder 则用来记录各种参数如变换矩阵等等，在渲染前通过 Frame 带上这些数据绑定到着色器里对应的变量上。</p>
+<h3 id="RendererContextI"><a href="#RendererContextI" class="headerlink" title="RendererContextI"></a>RendererContextI</h3><p>渲染接口的抽象类，每个后端实现都要实现这个接口的方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">//资源类管理命令 index,vertex,texture,shader,program,framebuffer,</span><br><span class="line">virtual void createXXX() = 0;</span><br><span class="line">virtual void updateXXX() = 0;</span><br><span class="line">virtual void destroyXXX() = 0;</span><br><span class="line">//重要接口，执行一个Frame当中的渲染命令</span><br><span class="line">void submit(Frame* _render, ClearQuad&amp; /*_clearQuad*/, TextVideoMemBlitter&amp; /*_textVideoMemBlitter*/) override</span><br><span class="line">//其他接口</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h3 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h3><p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1g13r3nq4s3j312v0u07f0.jpg" alt=""></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://zhuanlan.zhihu.com/p/59452545" target="_blank" rel="noopener">跨平台渲染引擎之路：bgfx分析</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/27/KlayGE/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yu Bin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来视">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/27/KlayGE/" class="post-title-link" itemprop="url">KlayGE</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-27 22:21:17" itemprop="dateCreated datePublished" datetime="2019-03-27T22:21:17+08:00">2019-03-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-28 08:59:25" itemprop="dateModified" datetime="2019-03-28T08:59:25+08:00">2019-03-28</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/KlayGE/" itemprop="url" rel="index"><span itemprop="name">KlayGE</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>游戏引擎 vs 图形渲染库</p>
+<p>图形渲染是游戏引擎的基础部件，好比大厦的地基。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/27/unity-shader-examples/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1611,545 +2157,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/23/haskell类型/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Yu Bin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="未来视">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/23/haskell类型/" class="post-title-link" itemprop="url">haskell类型</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-02-23 16:29:58 / Modified: 16:48:35" itemprop="dateCreated datePublished" datetime="2019-02-23T16:29:58+08:00">2019-02-23</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/haskell-类型/" itemprop="url" rel="index"><span itemprop="name">haskell 类型</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="haskell类型"><a href="#haskell类型" class="headerlink" title="haskell类型"></a>haskell类型</h1><h2 id="haskell类型特性"><a href="#haskell类型特性" class="headerlink" title="haskell类型特性"></a>haskell类型特性</h2><h3 id="强类型-—弱类型"><a href="#强类型-—弱类型" class="headerlink" title="强类型 —弱类型"></a>强类型 —弱类型</h3><ol>
-<li>每个值(表达式)都有一个类型</li>
-<li>类型转化要显式的使用类型转换函数</li>
-</ol>
-<h3 id="静态类型-—动态类型"><a href="#静态类型-—动态类型" class="headerlink" title="静态类型 —动态类型"></a>静态类型 —动态类型</h3><ol>
-<li>编译期就知道每个值和表达式的类型</li>
-</ol>
-<h3 id="自动推导"><a href="#自动推导" class="headerlink" title="自动推导"></a>自动推导</h3><ol>
-<li>不必为每个值都指定一个类型,编译器可根据上下文推导出值的类型</li>
-<li>顶层函数一般要写上,有得于越早发现错误</li>
-</ol>
-<h2 id="haskell常用类型"><a href="#haskell常用类型" class="headerlink" title="haskell常用类型"></a>haskell常用类型</h2><h3 id="单类型"><a href="#单类型" class="headerlink" title="单类型"></a>单类型</h3><ol>
-<li>Bool</li>
-<li>Char</li>
-<li>Num家族(Int,Integer,Word,Float,Double)</li>
-</ol>
-<h3 id="聚合类型"><a href="#聚合类型" class="headerlink" title="聚合类型"></a>聚合类型</h3><ol>
-<li>Maybe(Just,Nothing)</li>
-<li>List([],:)</li>
-<li>元组((,),(,,),(,,,)…)</li>
-</ol>
-<h3 id="函数类型"><a href="#函数类型" class="headerlink" title="函数类型"></a>函数类型</h3><ol>
-<li>非柯里化函数</li>
-<li>柯里化函数</li>
-<li>多态函数</li>
-<li>高阶函数</li>
-<li>逆名函数</li>
-</ol>
-<h2 id="haskell类型的作用"><a href="#haskell类型的作用" class="headerlink" title="haskell类型的作用"></a>haskell类型的作用</h2><ol>
-<li>类型检测来进行错误检测</li>
-<li>程序的抽象</li>
-<li>文档作用</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/13/绝佳提问--示例/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Yu Bin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="未来视">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/01/13/绝佳提问--示例/" class="post-title-link" itemprop="url">绝佳提问--示例</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-01-13 20:10:46" itemprop="dateCreated datePublished" datetime="2019-01-13T20:10:46+08:00">2019-01-13</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-01-14 08:50:32" itemprop="dateModified" datetime="2019-01-14T08:50:32+08:00">2019-01-14</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/读书/" itemprop="url" rel="index"><span itemprop="name">读书</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>什么是问题?什么是提问题的能力?它的现状是什么?它重要吗?为什么重要?现状是什么?为什么现代社会较少?<br>它有什么作用?<br>如何解题?有没有能用的解题思路?</p>
-<h2 id="关于教育"><a href="#关于教育" class="headerlink" title="关于教育"></a>关于教育</h2><h2 id="示例问题"><a href="#示例问题" class="headerlink" title="示例问题"></a>示例问题</h2><p>1 为什么我们应该满足于现状?<br>2 当你告诉我不能去做某件事时,为什么我应该相信你?<br>3 我们怎样才才能….?<br>4 5个”为什么”<br>5 情景分析<br>6 为什么我的问题是这样的?<br>7 如果它不是我的问题,那应该是谁的问题?<br>8 如果不是我,那会是谁?如果不是此时,那会是什么时候?<br>9 组合思维–连接性探询<br>10 想错–从反面入手<br>11 我每次的失败都有差别吗?<br>12 无论成功与否,真正值得你做的事是什么?</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/13/绝佳提问/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Yu Bin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="未来视">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/01/13/绝佳提问/" class="post-title-link" itemprop="url">绝佳提问</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-01-13 20:10:02" itemprop="dateCreated datePublished" datetime="2019-01-13T20:10:02+08:00">2019-01-13</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-01-14 08:50:32" itemprop="dateModified" datetime="2019-01-14T08:50:32+08:00">2019-01-14</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/读书/" itemprop="url" rel="index"><span itemprop="name">读书</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="模式-为什么–-gt-如果–-gt-怎样"><a href="#模式-为什么–-gt-如果–-gt-怎样" class="headerlink" title="模式 ( 为什么–&gt;如果–&gt;怎样 )"></a>模式 ( 为什么–&gt;如果–&gt;怎样 )</h2><h3 id="阶段1–为什么"><a href="#阶段1–为什么" class="headerlink" title="阶段1–为什么"></a>阶段1–为什么</h3><p>1 退一步<br>2 如果我是xxx<br>3 对问题进行变化<br>4 以另一角度来看这问题<br>5 换一种思维方式<br>6 换一种描述/表述方式<br>7 以第三视角来描述自己的行为<br>8 5个为什么直达问题的本质<br>9 从无到有构建描述</p>
-<h3 id="阶段2–如果"><a href="#阶段2–如果" class="headerlink" title="阶段2–如果"></a>阶段2–如果</h3><p>1 组合思维<br>2 如果去掉这样的限制,我们还能有如何的方案<br>3 如果不计任何代码,不考虑任务物理法则,我们能得到什么样的方案<br>4 如果我们有用不完的资源,我们能得到什么样的方案</p>
-<h3 id="阶段3–怎样"><a href="#阶段3–怎样" class="headerlink" title="阶段3–怎样"></a>阶段3–怎样</h3><p>1 快速试错,快速迭代<br>2 从错误中吸取教训<br>3 寻找潜在的合作者<br>4 问题会产生更多的问题</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2197,7 +2204,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2226,7 +2233,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">8</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -2269,7 +2282,23 @@
                     
                       
                     
-                    <span class="site-state-item-count">15</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
